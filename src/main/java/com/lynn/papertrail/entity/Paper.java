@@ -1,9 +1,6 @@
 package com.lynn.papertrail.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -107,6 +104,7 @@ public class Paper {
     /**
      * 论文数据源枚举
      */
+    @Getter
     public enum PaperSource {
         ARXIV("arXiv"),
         IEEE("IEEE Xplore"),
@@ -122,8 +120,5 @@ public class Paper {
             this.displayName = displayName;
         }
 
-        public String getDisplayName() {
-            return displayName;
-        }
     }
 }
