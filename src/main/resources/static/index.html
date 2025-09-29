@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>arXiv 论文搜索</title>
+    <title>Paper Trail - 论文搜索与AI对话</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
         }
         .container {
             background: white;
@@ -18,11 +23,27 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .chat-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
         h1 {
             color: #333;
             text-align: center;
             margin-bottom: 30px;
         }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        /* 搜索表单样式 */
         .search-form {
             margin-bottom: 30px;
             padding: 20px;
@@ -45,12 +66,13 @@
             font-weight: bold;
             color: #555;
         }
-        input[type="text"], input[type="number"], select {
+        input[type="text"], input[type="number"], select, textarea {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            box-sizing: border-box;
         }
         button {
             background: #007bff;
@@ -64,6 +86,70 @@
         button:hover {
             background: #0056b3;
         }
+
+        /* AI对话样式 */
+        .chat-form {
+            margin-bottom: 20px;
+        }
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .chat-input {
+            flex: 1;
+            min-height: 80px;
+            resize: vertical;
+        }
+        .chat-send-btn {
+            align-self: flex-end;
+            height: 40px;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        .provider-selector {
+            margin-bottom: 10px;
+        }
+        .provider-selector select {
+            width: 100%;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fafafa;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .chat-message.user {
+            background: #e3f2fd;
+            text-align: right;
+        }
+        .chat-message.ai {
+            background: #f1f8e9;
+        }
+        .chat-message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .chat-message-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .chat-loading {
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* 其他样式保持不变 */
         .loading {
             text-align: center;
             padding: 20px;
@@ -136,60 +222,112 @@
             margin-bottom: 20px;
             text-align: center;
         }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .chat-container {
+                position: static;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔬 arXiv 论文搜索</h1>
+    <h1>📚 Paper Trail - 论文搜索与AI对话</h1>
 
-        <form id="searchForm" class="search-form">
-            <div class="form-row">
-                <div class="form-group" style="flex: 3;">
-                    <label for="query">搜索关键词:</label>
-                    <input type="text" id="query" name="query" required placeholder="例如: machine learning, quantum computing">
+    <div class="main-container">
+        <!-- 论文搜索区域 -->
+        <div class="container">
+            <h2>🔬 arXiv 论文搜索</h2>
+
+            <form id="searchForm" class="search-form">
+                <div class="form-row">
+                    <div class="form-group" style="flex: 3;">
+                        <label for="query">搜索关键词:</label>
+                        <input type="text" id="query" name="query" required placeholder="例如: machine learning, quantum computing">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchField">搜索字段:</label>
+                        <select id="searchField" name="searchField">
+                            <option value="all">全部</option>
+                            <option value="title">标题</option>
+                            <option value="author">作者</option>
+                            <option value="abstract">摘要</option>
+                            <option value="subject">主题</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="searchField">搜索字段:</label>
-                    <select id="searchField" name="searchField">
-                        <option value="all">全部</option>
-                        <option value="title">标题</option>
-                        <option value="author">作者</option>
-                        <option value="abstract">摘要</option>
-                        <option value="subject">主题</option>
-                    </select>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="maxResults">结果数量:</label>
+                        <input type="number" id="maxResults" name="maxResults" value="10" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="start">起始位置:</label>
+                        <input type="number" id="start" name="start" value="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="sortBy">排序方式:</label>
+                        <select id="sortBy" name="sortBy">
+                            <option value="relevance">相关性</option>
+                            <option value="lastUpdatedDate">最后更新</option>
+                            <option value="submittedDate">提交时间</option>
+                        </select>
+                    </div>
                 </div>
+
+                <button type="submit">🔍 搜索论文</button>
+            </form>
+
+            <div id="loading" class="loading" style="display: none;">
+                正在搜索论文，请稍候...
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="maxResults">结果数量:</label>
-                    <input type="number" id="maxResults" name="maxResults" value="10" min="1" max="100">
-                </div>
-                <div class="form-group">
-                    <label for="start">起始位置:</label>
-                    <input type="number" id="start" name="start" value="0" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="sortBy">排序方式:</label>
-                    <select id="sortBy" name="sortBy">
-                        <option value="relevance">相关性</option>
-                        <option value="lastUpdatedDate">最后更新</option>
-                        <option value="submittedDate">提交时间</option>
-                    </select>
-                </div>
-            </div>
-
-            <button type="submit">🔍 搜索论文</button>
-        </form>
-
-        <div id="loading" class="loading" style="display: none;">
-            正在搜索论文，请稍候...
+            <div id="results" class="results"></div>
         </div>
 
-        <div id="results" class="results"></div>
+        <!-- AI对话区域 -->
+        <div class="chat-container">
+            <h2>🤖 AI 学术助手</h2>
+
+            <div class="chat-form">
+                <div class="provider-selector">
+                    <label for="aiProvider">AI 提供者:</label>
+                    <select id="aiProvider">
+                        <option value="openai">OpenAI (GPT)</option>
+                        <option value="ollama">Ollama (本地)</option>
+                    </select>
+                </div>
+
+                <div class="chat-input-group">
+                    <textarea id="chatInput" class="chat-input" placeholder="向AI助手提问，比如解释论文概念、总结研究内容等..." rows="3"></textarea>
+                    <button id="chatSendBtn" class="chat-send-btn">发送</button>
+                </div>
+            </div>
+
+            <div id="chatLoading" class="chat-loading" style="display: none;">
+                AI正在思考中...
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+                <div class="chat-message ai">
+                    <div>👋 你好！我是你的AI学术助手。我可以帮你：</div>
+                    <div>• 解释学术概念和术语</div>
+                    <div>• 总结论文内容</div>
+                    <div>• 回答研究相关问题</div>
+                    <div>• 提供学术建议</div>
+                    <div class="chat-message-time">系统消息</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
+        let currentSessionId = null;
+
+        // 论文搜索功能
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -222,6 +360,75 @@
                 resultsDiv.innerHTML = '<p style="text-align: center; color: #d32f2f;">搜索失败: ' + error.message + '</p>';
             }
         });
+
+        // AI对话功能
+        document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            const provider = document.getElementById('aiProvider').value;
+
+            if (!message) return;
+
+            // 添加用户消息到界面
+            addChatMessage(message, 'user');
+            chatInput.value = '';
+
+            // 显示加载状态
+            const loadingDiv = document.getElementById('chatLoading');
+            loadingDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/chat/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        provider: provider,
+                        sessionId: currentSessionId
+                    })
+                });
+
+                const data = await response.json();
+                loadingDiv.style.display = 'none';
+
+                if (data.success) {
+                    currentSessionId = data.sessionId;
+                    addChatMessage(data.message, 'ai', data.provider);
+                } else {
+                    addChatMessage(data.error || '对话失败', 'error');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                addChatMessage('网络错误: ' + error.message, 'error');
+            }
+        }
+
+        function addChatMessage(message, type, provider = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+
+            const timestamp = new Date().toLocaleTimeString('zh-CN');
+            const providerText = provider ? ` (${provider})` : '';
+
+            messageDiv.innerHTML = `
+                <div>${message}</div>
+                <div class="chat-message-time">${timestamp}${providerText}</div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
@@ -260,4 +467,3 @@
     </script>
 </body>
 </html>
-
