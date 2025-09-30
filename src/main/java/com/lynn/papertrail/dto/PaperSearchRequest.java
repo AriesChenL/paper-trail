@@ -11,6 +11,7 @@ import java.util.Set;
 
 /**
  * 论文搜索请求DTO - 支持多数据源
+ *
  * @author lynn
  */
 @Data
