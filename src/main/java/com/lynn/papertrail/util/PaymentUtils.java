@@ -5,10 +5,11 @@ import java.util.Map;
 
 /**
  * 支付相关工具类
+ *
  * @author lynn
  */
 public class PaymentUtils {
-    
+
     /**
      * 解析查询字符串为Map
      */
