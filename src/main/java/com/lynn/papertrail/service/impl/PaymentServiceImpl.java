@@ -49,6 +49,8 @@ public class PaymentServiceImpl implements PaymentService {
                     .totalAmount(request.getTotalAmount())
                     .status("WAIT_BUYER_PAY")
                     .body(request.getBody())
+                    .createTime(LocalDateTime.now())
+                    .updateTime(LocalDateTime.now())
                     .expireTime(LocalDateTime.now().plusMinutes(request.getExpireTime()))
                     .build();
 
