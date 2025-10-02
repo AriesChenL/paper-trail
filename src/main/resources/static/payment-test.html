@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alipay Payment Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .product {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .product-image {
+            width: 100px;
+            height: 100px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 40px;
+        }
+        
+        .product-details {
+            flex: 1;
+        }
+        
+        .product-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .product-description {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #1677ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #095cb5;
+        }
+        
+        .pay-button {
+            background-color: #00a0e9;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .pay-button:hover {
+            background-color: #0086c4;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .payment-container {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .payment-form-container {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .order-info {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .order-status {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .status-form {
+            margin-bottom: 15px;
+        }
+        
+        .status-display {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .refresh-btn {
+            background-color: #52c41a;
+            margin-top: 10px;
+        }
+        
+        .refresh-btn:hover {
+            background-color: #389e0d;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-wait {
+            background-color: #fffbe6;
+            color: #d48806;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Alipay Payment Test</h1>
+        
+        <div class="product">
+            <div class="product-image">📱</div>
+            <div class="product-details">
+                <div class="product-title">Test Product - Premium Smartphone</div>
+                <div class="product-price">¥2,499.00</div>
+                <div class="product-description">High-quality smartphone with advanced features for testing payments</div>
+                <button class="pay-button" id="pay-button">Pay with Alipay</button>
+            </div>
+        </div>
+        
+        <div id="payment-container" class="payment-container">
+            <h3>Processing Payment</h3>
+            <div class="order-info">
+                <div><strong>Order ID:</strong> <span id="order-id-display"></span></div>
+                <div><strong>Status:</strong> <span class="status-indicator status-wait" id="order-status-display">WAIT_BUYER_PAY</span></div>
+            </div>
+            <div class="payment-form-container">
+                <p>Redirecting to Alipay for payment...</p>
+                <div id="payment-form"></div>
+            </div>
+            <button class="refresh-btn" id="refresh-status">Refresh Order Status</button>
+        </div>
+        
+        <div class="order-status">
+            <h2>Check Order Status</h2>
+            <form id="status-form" class="status-form">
+                <div class="form-group">
+                    <label for="check-order-id">Order ID to Check</label>
+                    <input type="text" id="check-order-id" placeholder="Enter order ID" required>
+                </div>
+                <button type="submit">Check Status</button>
+            </form>
+            
+            <div id="status-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Current order data
+        let currentOrderData = null;
+        
+        // Pay button event
+        document.getElementById('pay-button').addEventListener('click', function() {
+            // Simulate API call to create order
+            simulateCreateOrder();
+        });
+        
+        // Simulate API call to create order
+        function simulateCreateOrder() {
+            // Show loading state
+            const paymentContainer = document.getElementById('payment-container');
+            paymentContainer.style.display = 'block';
+            
+            const orderIdDisplay = document.getElementById('order-id-display');
+            orderIdDisplay.textContent = 'Loading...';
+            
+            // Simulate network delay
+            setTimeout(() => {
+                // This is the API response you provided
+                const apiResponse = {
+                    outTradeNo: "ORDER_1759314439802_f8561803",
+                    status: "WAIT_BUYER_PAY",
+                    tradeNo: null,
+                    form: "<form name=\"punchout_form\" method=\"post\" action=\"https://openapi-sandbox.dl.alipaydev.com/gateway.do?charset=UTF-8&method=alipay.trade.page.pay&sign=eQ2HMl%2BvggIB4mevG%2FhLPjWhI2EuXsQD6I1d6pHj45HqpPu5ZsecrtqAcmKxtZUVU%2B%2Fdd8zXoL34Z3Eu1x%2F9QLpa2tsGQttnaZ1SUVB4e4JzqoUpXPchdtEkQ4eaO2xAcne0tdG8qBWVWDhO1WeF76Z1WHRbGdvxZB899vA4azeQMm1PwZh9RPyL7jcB2YL4IIhkHJLb6yeNe5JLxZizSShwP6JwJV7JbLA8u%2Fs3SCgU8HKtXPACe45N%2FmQj5wg%2BvtwXbxW0zZ3AbWJEc7s5hrQVEQEAT3LPgPyDLoJD8ILaZhSns6g9Ry38pEF4JT%2BAyvj2rVPX6adasPp73E4OMg%3D%3D&return_url=http%3A%2F%2Flocalhost%3A8080%2Falipay%2Freturn&notify_url=http%3A%2F%2Flocalhost%3A8080%2Falipay%2Fnotify&version=1.0&app_id=9021000135626599&sign_type=RSA&timestamp=2025-10-01+18%3A27%3A20&alipay_sdk=alipay-sdk-java-dynamicVersionNo&format=json\">\n<input type=\"hidden\" name=\"biz_content\" value=\"{&quot;product_code&quot;:&quot;FAST_INSTANT_TRADE_PAY&quot;,&quot;body&quot;:&quot;body bbb&quot;,&quot;total_amount&quot;:&quot;100&quot;,&quot;time_expire&quot;:&quot;30m&quot;,&quot;subject&quot;:&quot;test&quot;,&quot;out_trade_no&quot;:&quot;ORDER_1759314439802_f8561803&quot;}\">\n<input type=\"submit\" value=\"立即支付\" style=\"display:none\" >\n</form>\n<script>document.forms[0].submit();<\\/script>",
+                    error: null,
+                    success: true
+                };
+                
+                // Store current order data
+                currentOrderData = apiResponse;
+                
+                // Update UI with order data
+                document.getElementById('order-id-display').textContent = apiResponse.outTradeNo;
+                document.getElementById('order-status-display').textContent = apiResponse.status;
+                
+                // Insert the payment form
+                const paymentFormContainer = document.getElementById('payment-form');
+                paymentFormContainer.innerHTML = apiResponse.form;
+                
+                // Auto-submit the form after a short delay
+                setTimeout(() => {
+                    document.forms[0].submit();
+                }, 1000);
+                
+                // Scroll to payment container
+                document.getElementById('payment-container').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
+        }
+        
+        // Refresh status button event
+        document.getElementById('refresh-status').addEventListener('click', function() {
+            if (currentOrderData) {
+                checkOrderStatus(currentOrderData.outTradeNo);
+            } else {
+                alert('No active order to refresh');
+            }
+        });
+        
+        // Handle status form submission
+        document.getElementById('status-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const orderId = document.getElementById('check-order-id').value;
+            
+            if (!orderId) {
+                showResult('Please enter an order ID', 'error', 'status-result');
+                return;
+            }
+            
+            // Simulate status check
+            checkOrderStatus(orderId);
+        });
+        
+        function checkOrderStatus(orderId) {
+            const resultDiv = document.getElementById('status-result');
+            resultDiv.textContent = `Checking status for Order #${orderId}...`;
+            resultDiv.className = 'result';
+            resultDiv.style.display = 'block';
+            
+            // Simulate network delay
+            setTimeout(() => {
+                // Simulate API response format based on Alipay response structure
+                const apiResponse = {
+                    code: '10000', // Alipay success code
+                    msg: 'Success',
+                    outTradeNo: orderId,
+                    tradeNo: '2025082022001234567890', // example trade number
+                    tradeStatus: null
+                };
+                
+                // Randomly assign status for testing (using real Alipay status values)
+                const statuses = ['WAIT_BUYER_PAY', 'TRADE_CLOSED', 'TRADE_SUCCESS', 'TRADE_FINISHED'];
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                
+                // Set trade status based on random selection
+                apiResponse.tradeStatus = randomStatus;
+                
+                let statusText = '';
+                let statusClass = 'result';
+                
+                switch(randomStatus) {
+                    case 'WAIT_BUYER_PAY':
+                        statusText = `Order #${orderId} is waiting for buyer to pay. Trade No: ${apiResponse.tradeNo || 'N/A'}`;
+                        statusClass = 'result';
+                        // Update the current order status display if this is the current order
+                        if (currentOrderData && currentOrderData.outTradeNo === orderId) {
+                            document.getElementById('order-status-display').textContent = randomStatus;
+                        }
+                        break;
+                    case 'TRADE_CLOSED':
+                        statusText = `Order #${orderId} has been closed (payment not completed). Trade No: ${apiResponse.tradeNo || 'N/A'}`;
+                        statusClass = 'result error';
+                        if (currentOrderData && currentOrderData.outTradeNo === orderId) {
+                            document.getElementById('order-status-display').textContent = randomStatus;
+                        }
+                        break;
+                    case 'TRADE_SUCCESS':
+                        statusText = `Order #${orderId} payment completed successfully. Trade No: ${apiResponse.tradeNo || 'N/A'}`;
+                        statusClass = 'result success';
+                        if (currentOrderData && currentOrderData.outTradeNo === orderId) {
+                            document.getElementById('order-status-display').textContent = randomStatus;
+                        }
+                        break;
+                    case 'TRADE_FINISHED':
+                        statusText = `Order #${orderId} trade finished. Trade No: ${apiResponse.tradeNo || 'N/A'}`;
+                        statusClass = 'result success';
+                        if (currentOrderData && currentOrderData.outTradeNo === orderId) {
+                            document.getElementById('order-status-display').textContent = randomStatus;
+                        }
+                        break;
+                    default:
+                        statusText = `Order #${orderId} status: ${randomStatus}`;
+                        statusClass = 'result';
+                }
+                
+                resultDiv.textContent = statusText;
+                resultDiv.className = statusClass;
+                
+                // Scroll to result
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+        
+        function showResult(message, type, elementId) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

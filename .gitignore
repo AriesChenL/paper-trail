@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 敏感配置文件
+local.properties
+*.local.properties
+config.properties
+application-secret.properties
+**/secret-*.properties
