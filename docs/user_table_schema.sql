@@ -1,25 +1,25 @@
--- 用户表创建语句
-CREATE TABLE `user` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '用户ID',
-    `username` VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名',
-    `email` VARCHAR(100) DEFAULT NULL UNIQUE COMMENT '邮箱',
-    `password` VARCHAR(255) NOT NULL COMMENT '密码（加密后）',
-    `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
-    `nickname` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
-    `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像URL',
-    `gender` TINYINT DEFAULT 0 COMMENT '性别：0-未知，1-男，2-女',
-    `age` INT DEFAULT NULL COMMENT '年龄',
-    `status` TINYINT DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
-    `role` VARCHAR(20) DEFAULT 'USER' COMMENT '角色：USER-普通用户，ADMIN-管理员',
-    `invite_code` VARCHAR(20) DEFAULT NULL COMMENT '邀请码',
-    `invited_by` BIGINT DEFAULT NULL COMMENT '邀请人ID',
-    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `last_login_time` DATETIME DEFAULT NULL COMMENT '最后登录时间',
-    `last_login_ip` VARCHAR(45) DEFAULT NULL COMMENT '最后登录IP',
-    INDEX `idx_username` (`username`),
-    INDEX `idx_email` (`email`),
-    INDEX `idx_phone` (`phone`),
-    INDEX `idx_invite_code` (`invite_code`),
-    INDEX `idx_create_time` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+CREATE TABLE `user`
+(
+    `id`          bigint                                  NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+    `username`    varchar(50) COLLATE utf8mb4_unicode_ci  NOT NULL COMMENT '用户名',
+    `email`       varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',
+    `password`    varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码（加密后）',
+    `phone`       varchar(20) COLLATE utf8mb4_unicode_ci  DEFAULT NULL COMMENT '手机号',
+    `nickname`    varchar(50) COLLATE utf8mb4_unicode_ci  DEFAULT NULL COMMENT '昵称',
+    `avatar`      varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像URL',
+    `gender`      tinyint                                 DEFAULT '0' COMMENT '性别：0-未知，1-男，2-女',
+    `status`      tinyint                                 DEFAULT '1' COMMENT '状态：0-禁用，1-启用',
+    `role`        varchar(20) COLLATE utf8mb4_unicode_ci  DEFAULT 'USER' COMMENT '角色：USER-普通用户，ADMIN-管理员',
+    `create_time` datetime                                DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime                                DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `username` (`username`),
+    UNIQUE KEY `email` (`email`),
+    KEY `idx_username` (`username`),
+    KEY `idx_email` (`email`),
+    KEY `idx_phone` (`phone`),
+    KEY `idx_create_time` (`create_time`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户表'
+

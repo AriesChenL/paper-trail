@@ -33,11 +33,6 @@ public interface UserService {
     User findById(Long id);
 
     /**
-     * 更新用户最后登录时间
-     */
-    void updateLastLogin(Long userId, String ip);
-
-    /**
      * 根据用户名和密码获取用户（用于登录验证）
      */
     User findByUsernameAndPassword(String username, String password);

@@ -1,6 +1,5 @@
 package com.lynn.papertrail.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
 import com.lynn.papertrail.dto.UserLoginRequest;
 import com.lynn.papertrail.dto.UserLoginResponse;
 import com.lynn.papertrail.dto.UserRegisterRequest;
@@ -57,7 +56,6 @@ public class UserServiceImpl implements UserService {
                 .role("USER") // 默认为普通用户
                 .createTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
-                .inviteCode(generateInviteCode()) // 生成邀请码
                 .build();
 
         userMapper.insert(user);
@@ -79,9 +77,6 @@ public class UserServiceImpl implements UserService {
         // 生成UUID作为token
         String token = UUID.randomUUID().toString();
 
-        // 更新最后登录时间
-        updateLastLogin(user.getId(), "127.0.0.1"); // 这里可以传入真实的IP地址
-
         return new UserLoginResponse(token, user);
     }
 
@@ -93,17 +88,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userMapper.selectOneById(id);
-    }
-
-    @Override
-    public void updateLastLogin(Long userId, String ip) {
-        User user = userMapper.selectOneById(userId);
-        if (user != null) {
-            user.setLastLoginTime(LocalDateTime.now());
-            user.setLastLoginIp(ip);
-            user.setUpdateTime(LocalDateTime.now());
-            userMapper.update(user);
-        }
     }
 
     @Override
@@ -130,12 +114,5 @@ public class UserServiceImpl implements UserService {
      */
     private boolean verifyPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
-    }
-
-    /**
-     * 生成邀请码
-     */
-    private String generateInviteCode() {
-        return RandomUtil.randomString(8).toUpperCase(); // 生成8位大写随机字符串
     }
 }

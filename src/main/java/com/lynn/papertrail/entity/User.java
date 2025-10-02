@@ -71,11 +71,6 @@ public class User implements Serializable {
     private Integer gender;
 
     /**
-     * 年龄
-     */
-    private Integer age;
-
-    /**
      * 状态：0-禁用，1-启用
      */
     private Integer status;
@@ -86,16 +81,6 @@ public class User implements Serializable {
     private String role;
 
     /**
-     * 邀请码
-     */
-    private String inviteCode;
-
-    /**
-     * 邀请人ID
-     */
-    private Long invitedBy;
-
-    /**
      * 创建时间
      */
     private LocalDateTime createTime;
@@ -104,15 +89,5 @@ public class User implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
-
-    /**
-     * 最后登录时间
-     */
-    private LocalDateTime lastLoginTime;
-
-    /**
-     * 最后登录IP
-     */
-    private String lastLoginIp;
 
 }
