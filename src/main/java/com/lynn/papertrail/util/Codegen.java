@@ -13,7 +13,7 @@ public class Codegen {
     public static void main(String[] args) {
         //配置数据源
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://192.168.100.129:3306/papertrail?characterEncoding=utf-8");
+        dataSource.setJdbcUrl("jdbc:mysql://192.168.100.130:3306/paper-trail?characterEncoding=utf-8");
         dataSource.setUsername("root");
         dataSource.setPassword("000000");
 

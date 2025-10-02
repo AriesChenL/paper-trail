@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
  *  实体类。
  *
  * @author lynn
- * @since 2025-10-01
+ * @since 2025-10-02
  */
 @Data
 @Builder
@@ -30,13 +30,22 @@ public class PaymentOrder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * ID
+     */
     @Id(keyType = KeyType.Auto)
     private Long id;
 
     private String body;
 
+    /**
+     * ID
+     */
     private String buyerId;
 
+    /**
+     * ID
+     */
     private String buyerLogonId;
 
     private LocalDateTime createTime;
