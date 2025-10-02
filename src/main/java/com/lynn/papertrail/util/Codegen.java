@@ -41,7 +41,7 @@ public class Codegen {
 
         //设置生成 entity 并启用 Lombok
         globalConfig.setEntityGenerateEnable(true);
-        globalConfig.setEntityOverwriteEnable(true);
+        // globalConfig.setEntityOverwriteEnable(true);
         globalConfig.setEntityWithLombok(true);
         //设置项目的JDK版本，项目的JDK为14及以上时建议设置该项，小于14则可以不设置
         globalConfig.setEntityJdkVersion(21);
@@ -49,7 +49,7 @@ public class Codegen {
         //设置生成 mapper
         globalConfig.setMapperGenerateEnable(true);
         globalConfig.setMapperXmlGenerateEnable(true);
-        globalConfig.setMapperOverwriteEnable(true);
+        // globalConfig.setMapperOverwriteEnable(true);
 
         //可以单独配置某个列
         // ColumnConfig columnConfig = new ColumnConfig();
