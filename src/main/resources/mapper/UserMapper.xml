@@ -12,4 +12,7 @@
         SELECT * FROM user WHERE email = #{email}
     </select>
 
+    <select id="selectById" resultType="com.lynn.papertrail.entity.User">
+        SELECT * FROM user WHERE id = #{id}
+    </select>
 </mapper>
